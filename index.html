@@ -106,19 +106,24 @@
   .nav-right{justify-content:flex-end;}
 
   /* combined menu + search icon */
-  .menu-search-btn{width:28px; height:22px; position:relative;}
-  .menu-search-btn svg{width:100%; height:100%; overflow:visible;}
+  .menu-search-btn{
+    width:34px; height:34px; border-radius:50%; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    transition:background .35s var(--ease);
+  }
+  .menu-search-btn:hover{background:var(--c-fog);}
+  .menu-search-btn.open{background:var(--c-fog);}
+  .menu-search-btn svg{width:19px; height:16px; overflow:visible;}
   .menu-search-btn svg *{
-    stroke:var(--c-ink); stroke-width:1.3;
-    transition:transform .4s var(--ease), opacity .35s var(--ease);
+    stroke:var(--c-ink); stroke-width:1.4;
+    transition:transform .5s cubic-bezier(.65,0,.34,1.28), opacity .3s var(--ease);
     transform-box:fill-box; transform-origin:center;
   }
   .menu-search-btn .msb-circle{fill:none;}
-  .menu-search-btn:hover svg *{stroke:var(--c-graphite);}
-  .menu-search-btn.open .msb-line1{transform:translateY(3.5px) scaleX(0.35); opacity:0;}
-  .menu-search-btn.open .msb-line2{transform:translateY(-3.5px) scaleX(0.35); opacity:0;}
-  .menu-search-btn.open .msb-circle{transform:scale(1.45);}
-  .menu-search-btn.open .msb-handle{transform:scale(1.45);}
+  .menu-search-btn.open .msb-line1{transform:translateY(4px) rotate(135deg) scaleX(0.4); opacity:0;}
+  .menu-search-btn.open .msb-line2{transform:translateY(-4px) rotate(135deg) scaleX(0.4); opacity:0;}
+  .menu-search-btn.open .msb-circle{transform:scale(1.6) rotate(90deg);}
+  .menu-search-btn.open .msb-handle{transform:scale(1.6) rotate(90deg);}
 
   /* brand */
   .brand-mark{
@@ -167,11 +172,11 @@
     position:absolute; top:100%; left:0; margin-top:0.9rem; width:min(300px,82vw);
     background:var(--c-white); border:1px solid var(--c-line);
     box-shadow:0 12px 26px rgba(33,31,28,0.06);
-    transform:translateY(-8px); opacity:0; max-height:0; overflow:hidden;
-    transition:max-height .4s var(--ease), opacity .3s var(--ease), transform .3s var(--ease);
+    transform:translateY(-8px) scale(0.97); transform-origin:top left; opacity:0; max-height:0; overflow:hidden;
+    transition:max-height .4s var(--ease), opacity .3s var(--ease), transform .35s var(--ease);
     z-index:20;
   }
-  .menu-search-wrap.open .menu-search-panel{max-height:340px; opacity:1; transform:translateY(0);}
+  .menu-search-wrap.open .menu-search-panel{max-height:340px; opacity:1; transform:translateY(0) scale(1);}
   .search-panel-inner{padding:1rem 1.1rem 1.1rem;}
   .search-input-row{display:flex; align-items:center; gap:0.6rem; border-bottom:1px solid var(--c-line); padding-bottom:0.8rem;}
   .search-input-row svg{width:14px; height:14px; stroke:var(--c-graphite); fill:none; stroke-width:1.6; flex-shrink:0;}
@@ -293,19 +298,6 @@
   .icon-btn.account.active svg circle, .icon-btn.account.active svg path{stroke:var(--c-ink);}
   .auth-view{padding:0.2rem 0 1rem;}
   .auth-note{font-size:0.78rem; color:var(--c-graphite); line-height:1.5; margin-bottom:1.2rem;}
-  .auth-oauth{display:flex; flex-direction:column; gap:0.6rem;}
-  .auth-oauth-btn{
-    display:flex; align-items:center; justify-content:center; gap:0.6rem;
-    width:100%; padding:0.75rem 1rem; border:1px solid var(--c-line); border-radius:6px;
-    font-size:0.72rem; letter-spacing:0.04em; color:var(--c-ink); background:var(--c-white);
-    transition:border-color .25s var(--ease), background .25s var(--ease);
-  }
-  .auth-oauth-btn:hover{border-color:var(--c-stone); background:var(--c-fog);}
-  .auth-divider{
-    display:flex; align-items:center; gap:0.8rem; margin:1.3rem 0;
-    font-size:0.65rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--c-stone);
-  }
-  .auth-divider::before, .auth-divider::after{content:""; flex:1; height:1px; background:var(--c-line);}
   .auth-form{display:flex; flex-direction:column; gap:0.9rem;}
   .auth-field{display:flex; flex-direction:column; gap:0.4rem; font-size:0.68rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--c-graphite);}
   .auth-field input{
@@ -777,14 +769,7 @@
         </div>
       </div>
     </div>
-  </div>
 
-  <button class="brand-mark" data-target="inicio" aria-label="Ir a inicio">
-    <div class="wordmark">VANITY</div>
-    <span class="by-line">by Montclair</span>
-  </button>
-
-  <div class="nav-right">
     <div class="lang-select" id="langSelect">
       <button class="lang-btn" id="langBtn" aria-haspopup="true" aria-expanded="false">
         <span id="langCurrent">ES</span>
@@ -796,7 +781,14 @@
         <button data-lang="fr">FR</button>
       </div>
     </div>
+  </div>
 
+  <button class="brand-mark" data-target="inicio" aria-label="Ir a inicio">
+    <div class="wordmark">VANITY</div>
+    <span class="by-line">by Montclair</span>
+  </button>
+
+  <div class="nav-right">
     <button class="icon-btn theme" id="themeBtn" aria-label="Modo oscuro" aria-pressed="false">
       <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
@@ -862,19 +854,6 @@
     <!-- Logged-out: login / signup -->
     <div class="auth-view" id="authView">
       <p class="auth-note" id="authGateNote" data-i18n="account_gate_note">Inicia sesión o crea una cuenta para guardar tu lista de deseos y tu carrito.</p>
-
-      <div class="auth-oauth">
-        <button class="auth-oauth-btn" id="googleAuthBtn" type="button">
-          <svg viewBox="0 0 24 24" width="16" height="16"><path fill="#4285F4" d="M23.5 12.27c0-.79-.07-1.54-.2-2.27H12v4.3h6.47c-.28 1.5-1.13 2.77-2.4 3.62v3h3.88c2.27-2.09 3.55-5.17 3.55-8.65z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.07 7.94-2.9l-3.88-3c-1.08.72-2.45 1.15-4.06 1.15-3.13 0-5.78-2.11-6.73-4.96H1.26v3.1C3.24 21.3 7.29 24 12 24z"/><path fill="#FBBC05" d="M5.27 14.29A7.2 7.2 0 0 1 4.89 12c0-.8.14-1.57.38-2.29v-3.1H1.26A11.98 11.98 0 0 0 0 12c0 1.94.46 3.77 1.26 5.39l4.01-3.1z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.6 4.6 1.8l3.44-3.44C17.94 1.2 15.24 0 12 0 7.29 0 3.24 2.7 1.26 6.6l4.01 3.1c.95-2.84 3.6-4.95 6.73-4.95z"/></svg>
-          <span data-i18n="account_continue_google">Continuar con Google</span>
-        </button>
-        <button class="auth-oauth-btn" id="appleAuthBtn" type="button">
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M16.36 1c.1 1.1-.32 2.16-1 2.95-.7.84-1.85 1.5-2.96 1.4-.13-1.08.37-2.2 1.02-2.93.72-.82 1.98-1.44 2.94-1.42zM19.9 17.3c-.34.8-.75 1.55-1.28 2.26-.72.97-1.3 1.64-1.98 1.65-.66.02-.87-.42-1.82-.42-.95 0-1.19.4-1.8.44-.66.03-1.32-.7-2.05-1.68-1.5-2.03-2.66-5.73-1.1-8.24.76-1.23 2.13-2.02 3.6-2.04.72-.01 1.4.48 1.82.48.42 0 1.25-.6 2.1-.5.36.02 1.37.14 2.02 1.1-.05.03-1.2.72-1.19 2.13.02 1.7 1.5 2.26 1.52 2.27-.02.05-.24.83-.8 1.65z"/></svg>
-          <span data-i18n="account_continue_apple">Continuar con Apple</span>
-        </button>
-      </div>
-
-      <div class="auth-divider"><span data-i18n="account_or">o con tu correo</span></div>
 
       <form id="authForm" class="auth-form" autocomplete="on">
         <label class="auth-field">
@@ -1141,15 +1120,20 @@
       velas_p:"La primera colección se está vertiendo. Arden lento y dejan una fragancia que se queda después de la llama.",
       footer1:"© 2026 Vanity by Montclair", footer2:"Hecho a mano · Lotes limitados",
       policy_privacy_link:"Política de privacidad", policy_refund_link:"Política de reembolsos",
-      product_name:"Coco", product_meta:"Vela aromática · Envase mate negro · 8 oz",
-      product_desc:"Coco abre con notas cremosas de pulpa fresca, se asienta sobre leche de coco tibia y cierra con un fondo suave de vainilla y madera blanca. Vertida a mano en cera de soja dentro de un envase de cerámica mate negro.",
-      notes_label:"Notas", product_notes:"Coco, leche de coco, vainilla, madera blanca",
+      product_meta:"Vela aromática · Envase mate negro · 8 oz",
+      notes_label:"Notas",
+      products:{
+        'vanilla-8oz':{ name:"Vainilla", desc:"Vainilla abre con una nube cálida de vaina tostada, se asienta sobre un corazón cremoso de leche y azúcar morena, y cierra con un fondo suave de haba tonka y madera blanca. Vertida a mano en cera de soja dentro de un envase de cerámica mate negro.", notes:"Vaina de vainilla, leche, azúcar morena, haba tonka" },
+        'gardenia-8oz':{ name:"Gardenia", desc:"Gardenia abre con pétalos blancos recién cortados, se asienta sobre un corazón floral cremoso de jazmín y azahar, y cierra con un fondo suave de almizcle blanco. Vertida a mano en cera de soja dentro de un envase de cerámica mate negro.", notes:"Gardenia, jazmín, azahar, almizcle blanco" },
+        'jasmine-8oz':{ name:"Jazmín", desc:"Jazmín abre con un ramo verde y luminoso de pétalos nocturnos, se asienta sobre un corazón floral meloso, y cierra con un fondo cálido de sándalo y almizcle. Vertida a mano en cera de soja dentro de un envase de cerámica mate negro.", notes:"Jazmín, néroli, sándalo, almizcle" },
+        'lavender-8oz':{ name:"Lavanda", desc:"Lavanda abre con un campo herbal recién cortado, se asienta sobre un corazón floral seco y relajante, y cierra con un fondo suave de haba tonka y almizcle. Vertida a mano en cera de soja dentro de un envase de cerámica mate negro.", notes:"Lavanda, hierbas frescas, haba tonka, almizcle" },
+        'roses-8oz':{ name:"Rosas", desc:"Rosas abre con pétalos frescos recién cortados, se asienta sobre un corazón floral aterciopelado con un toque de geranio, y cierra con un fondo cálido de almizcle y madera blanca. Vertida a mano en cera de soja dentro de un envase de cerámica mate negro.", notes:"Rosa, geranio, almizcle, madera blanca" }
+      },
       burn_label:"Tiempo de combustión", product_burn:"Aprox. 45 horas",
       size_label:"Contenido neto", product_size:"8 oz (227 g)",
       wick_label:"Mecha", product_wick:"Algodón sin plomo",
       buy_now:"Comprar ahora", buy_toast:"¡Gracias por tu compra!",
       account_title:"Mi cuenta", account_gate_note:"Inicia sesión o crea una cuenta para guardar tu lista de deseos y tu carrito.",
-      account_continue_google:"Continuar con Google", account_continue_apple:"Continuar con Apple", account_or:"o con tu correo",
       account_email:"Correo", account_password:"Contraseña", account_login_btn:"Iniciar sesión", account_create_btn:"Crear cuenta",
       account_no_account:"¿No tienes cuenta?", account_have_account:"¿Ya tienes cuenta?", account_signed_in_as:"Sesión iniciada como:",
       account_logout_btn:"Cerrar sesión", account_error_generic:"Algo salió mal. Intenta de nuevo.", account_error_invalid:"Correo o contraseña incorrectos.",
@@ -1187,15 +1171,20 @@
       velas_p:"The first collection is being poured. They burn slow and leave a fragrance that lingers after the flame.",
       footer1:"© 2026 Vanity by Montclair", footer2:"Handmade · Limited batches",
       policy_privacy_link:"Privacy Policy", policy_refund_link:"Refund Policy",
-      product_name:"Coconut", product_meta:"Scented candle · Matte black vessel · 8 oz",
-      product_desc:"Coconut opens with creamy notes of fresh pulp, settles into warm coconut milk, and closes on a soft base of vanilla and white wood. Hand-poured in soy wax inside a matte black ceramic vessel.",
-      notes_label:"Notes", product_notes:"Coconut, coconut milk, vanilla, white wood",
+      product_meta:"Scented candle · Matte black vessel · 8 oz",
+      notes_label:"Notes",
+      products:{
+        'vanilla-8oz':{ name:"Vanilla", desc:"Vanilla opens with a warm cloud of toasted pod, settles into a creamy heart of milk and brown sugar, and closes on a soft base of tonka bean and white wood. Hand-poured in soy wax inside a matte black ceramic vessel.", notes:"Vanilla pod, milk, brown sugar, tonka bean" },
+        'gardenia-8oz':{ name:"Gardenia", desc:"Gardenia opens with freshly cut white petals, settles into a creamy floral heart of jasmine and orange blossom, and closes on a soft base of white musk. Hand-poured in soy wax inside a matte black ceramic vessel.", notes:"Gardenia, jasmine, orange blossom, white musk" },
+        'jasmine-8oz':{ name:"Jasmine", desc:"Jasmine opens with a bright green bouquet of night-blooming petals, settles into a honeyed floral heart, and closes on a warm base of sandalwood and musk. Hand-poured in soy wax inside a matte black ceramic vessel.", notes:"Jasmine, neroli, sandalwood, musk" },
+        'lavender-8oz':{ name:"Lavender", desc:"Lavender opens with a freshly cut herbal field, settles into a dry, calming floral heart, and closes on a soft base of tonka bean and musk. Hand-poured in soy wax inside a matte black ceramic vessel.", notes:"Lavender, fresh herbs, tonka bean, musk" },
+        'roses-8oz':{ name:"Roses", desc:"Roses opens with freshly cut petals, settles into a velvety floral heart with a touch of geranium, and closes on a warm base of musk and white wood. Hand-poured in soy wax inside a matte black ceramic vessel.", notes:"Rose, geranium, musk, white wood" }
+      },
       burn_label:"Burn time", product_burn:"Approx. 45 hours",
       size_label:"Net weight", product_size:"8 oz (227 g)",
       wick_label:"Wick", product_wick:"Lead-free cotton",
       buy_now:"Buy now", buy_toast:"Thank you for your purchase!",
       account_title:"My account", account_gate_note:"Sign in or create an account to save your wishlist and cart.",
-      account_continue_google:"Continue with Google", account_continue_apple:"Continue with Apple", account_or:"or with your email",
       account_email:"Email", account_password:"Password", account_login_btn:"Sign in", account_create_btn:"Create account",
       account_no_account:"Don't have an account?", account_have_account:"Already have an account?", account_signed_in_as:"Signed in as:",
       account_logout_btn:"Sign out", account_error_generic:"Something went wrong. Please try again.", account_error_invalid:"Incorrect email or password.",
@@ -1233,15 +1222,20 @@
       velas_p:"La première collection est en cours de coulée. Elles brûlent lentement et laissent un parfum qui persiste après la flamme.",
       footer1:"© 2026 Vanity by Montclair", footer2:"Fait main · Séries limitées",
       policy_privacy_link:"Politique de confidentialité", policy_refund_link:"Politique de remboursement",
-      product_name:"Noix de coco", product_meta:"Bougie parfumée · Contenant noir mat · 8 oz",
-      product_desc:"Noix de coco s'ouvre sur des notes crémeuses de pulpe fraîche, se pose sur du lait de coco tiède et se referme sur un fond doux de vanille et de bois blanc. Coulée à la main dans de la cire de soja, dans un contenant en céramique noir mat.",
-      notes_label:"Notes", product_notes:"Noix de coco, lait de coco, vanille, bois blanc",
+      product_meta:"Bougie parfumée · Contenant noir mat · 8 oz",
+      notes_label:"Notes",
+      products:{
+        'vanilla-8oz':{ name:"Vanille", desc:"Vanille s'ouvre sur un nuage chaud de gousse torréfiée, se pose sur un cœur crémeux de lait et de sucre roux, et se referme sur un fond doux de fève tonka et de bois blanc. Coulée à la main dans de la cire de soja, dans un contenant en céramique noir mat.", notes:"Gousse de vanille, lait, sucre roux, fève tonka" },
+        'gardenia-8oz':{ name:"Gardenia", desc:"Gardenia s'ouvre sur des pétales blancs fraîchement coupés, se pose sur un cœur floral crémeux de jasmin et de fleur d'oranger, et se referme sur un fond doux de musc blanc. Coulée à la main dans de la cire de soja, dans un contenant en céramique noir mat.", notes:"Gardenia, jasmin, fleur d'oranger, musc blanc" },
+        'jasmine-8oz':{ name:"Jasmin", desc:"Jasmin s'ouvre sur un bouquet vert et lumineux de pétales nocturnes, se pose sur un cœur floral miellé, et se referme sur un fond chaud de santal et de musc. Coulée à la main dans de la cire de soja, dans un contenant en céramique noir mat.", notes:"Jasmin, néroli, santal, musc" },
+        'lavender-8oz':{ name:"Lavande", desc:"Lavande s'ouvre sur un champ herbacé fraîchement coupé, se pose sur un cœur floral sec et apaisant, et se referme sur un fond doux de fève tonka et de musc. Coulée à la main dans de la cire de soja, dans un contenant en céramique noir mat.", notes:"Lavande, herbes fraîches, fève tonka, musc" },
+        'roses-8oz':{ name:"Roses", desc:"Roses s'ouvre sur des pétales fraîchement coupés, se pose sur un cœur floral velouté rehaussé de géranium, et se referme sur un fond chaud de musc et de bois blanc. Coulée à la main dans de la cire de soja, dans un contenant en céramique noir mat.", notes:"Rose, géranium, musc, bois blanc" }
+      },
       burn_label:"Durée de combustion", product_burn:"Environ 45 heures",
       size_label:"Contenu net", product_size:"8 oz (227 g)",
       wick_label:"Mèche", product_wick:"Coton sans plomb",
       buy_now:"Acheter maintenant", buy_toast:"Merci pour votre achat !",
       account_title:"Mon compte", account_gate_note:"Connectez-vous ou créez un compte pour enregistrer votre liste de souhaits et votre panier.",
-      account_continue_google:"Continuer avec Google", account_continue_apple:"Continuer avec Apple", account_or:"ou avec votre e-mail",
       account_email:"E-mail", account_password:"Mot de passe", account_login_btn:"Se connecter", account_create_btn:"Créer un compte",
       account_no_account:"Pas de compte ?", account_have_account:"Déjà un compte ?", account_signed_in_as:"Connecté en tant que :",
       account_logout_btn:"Se déconnecter", account_error_generic:"Une erreur est survenue. Réessayez.", account_error_invalid:"E-mail ou mot de passe incorrect.",
@@ -1267,7 +1261,11 @@
   const TOTAL_SLOTS = 6;
 
   const products = [
-    { id:'coco-8oz', price: 19 }
+    { id:'vanilla-8oz', price: 19 },
+    { id:'gardenia-8oz', price: 19 },
+    { id:'jasmine-8oz', price: 19 },
+    { id:'lavender-8oz', price: 19 },
+    { id:'roses-8oz', price: 19 }
   ];
 
   const state = { wishlist:new Set(), cart:new Map() };
@@ -1336,8 +1334,6 @@
   const authSwitchBtn = document.getElementById('authSwitchBtn');
   const authSwitchText = document.getElementById('authSwitchText');
   const accountEmailLabel = document.getElementById('accountEmailLabel');
-  const googleAuthBtn = document.getElementById('googleAuthBtn');
-  const appleAuthBtn = document.getElementById('appleAuthBtn');
   const logoutBtn = document.getElementById('logoutBtn');
   const velasGrid = document.getElementById('velasGrid');
   const homeProductsGrid = document.getElementById('homeProductsGrid');
@@ -1601,12 +1597,6 @@
     }
   });
 
-  googleAuthBtn.addEventListener('click', () => {
-    sb.auth.signInWithOAuth({ provider: 'google', options:{ redirectTo: window.location.href } });
-  });
-  appleAuthBtn.addEventListener('click', () => {
-    sb.auth.signInWithOAuth({ provider: 'apple', options:{ redirectTo: window.location.href } });
-  });
   logoutBtn.addEventListener('click', async () => {
     await sb.auth.signOut();
   });
@@ -1670,7 +1660,7 @@
       <div class="panel-item" data-open="${p.id}">
         <div class="panel-item-media">${jarIllustration}</div>
         <div class="panel-item-info">
-          <h4>${t.product_name}</h4>
+          <h4>${t.products[p.id].name}</h4>
           <span>$${p.price} USD</span>
         </div>
         <button class="panel-remove" data-wish="${p.id}" aria-label="${t.remove_label}">&times;</button>
@@ -1693,7 +1683,7 @@
       <div class="panel-item" data-open="${id}">
         <div class="panel-item-media">${jarIllustration}</div>
         <div class="panel-item-info">
-          <h4>${t.product_name}</h4>
+          <h4>${t.products[id].name}</h4>
           <span>${qty} &times; $${p.price} USD</span>
         </div>
         <button class="panel-remove" data-cart-remove="${id}" aria-label="${t.remove_label}">&times;</button>
@@ -1730,11 +1720,11 @@
     const qty = state.cart.get(p.id) || 0;
 
     detailMedia.innerHTML = jarIllustration;
-    detailName.textContent = t.product_name;
+    detailName.textContent = t.products[p.id].name;
     detailMeta.textContent = t.product_meta;
     detailPrice.textContent = `$${p.price} USD`;
-    detailDesc.textContent = t.product_desc;
-    detailNotes.textContent = t.product_notes;
+    detailDesc.textContent = t.products[p.id].desc;
+    detailNotes.textContent = t.products[p.id].notes;
     detailBurn.textContent = t.product_burn;
     detailSize.textContent = t.product_size;
     detailWick.textContent = t.product_wick;
@@ -1852,7 +1842,7 @@
           ${jarIllustration}
         </div>
         <div class="product-info">
-          <h3>${t.product_name}</h3>
+          <h3>${t.products[p.id].name}</h3>
           <p class="product-meta">${t.product_meta}</p>
           <div class="product-row">
             <span class="product-price">$${p.price} USD</span>
