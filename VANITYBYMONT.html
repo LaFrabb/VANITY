@@ -182,6 +182,13 @@
   }
   .icon-badge.show{opacity:1; transform:scale(1);}
 
+  .icon-dot{
+    position:absolute; top:0px; right:-1px; width:7px; height:7px;
+    border-radius:50%; background:var(--c-ink); border:1.5px solid var(--c-white);
+    opacity:0; transform:scale(0.4); transition:opacity .3s var(--ease), transform .3s var(--ease);
+  }
+  .icon-dot.show{opacity:1; transform:scale(1);}
+
 
 
 
@@ -255,6 +262,35 @@
     font-size:0.75rem; letter-spacing:0.08em; text-transform:uppercase;
   }
   .panel-buy{width:100%; text-align:center;}
+
+  /* ---------- ACCOUNT / AUTH ---------- */
+  .icon-btn.account.active svg circle, .icon-btn.account.active svg path{stroke:var(--c-ink);}
+  .auth-view{padding:0.2rem 0 1rem;}
+  .auth-note{font-size:0.78rem; color:var(--c-graphite); line-height:1.5; margin-bottom:1.2rem;}
+  .auth-oauth{display:flex; flex-direction:column; gap:0.6rem;}
+  .auth-oauth-btn{
+    display:flex; align-items:center; justify-content:center; gap:0.6rem;
+    width:100%; padding:0.75rem 1rem; border:1px solid var(--c-line); border-radius:6px;
+    font-size:0.72rem; letter-spacing:0.04em; color:var(--c-ink); background:var(--c-white);
+    transition:border-color .25s var(--ease), background .25s var(--ease);
+  }
+  .auth-oauth-btn:hover{border-color:var(--c-stone); background:var(--c-fog);}
+  .auth-divider{
+    display:flex; align-items:center; gap:0.8rem; margin:1.3rem 0;
+    font-size:0.65rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--c-stone);
+  }
+  .auth-divider::before, .auth-divider::after{content:""; flex:1; height:1px; background:var(--c-line);}
+  .auth-form{display:flex; flex-direction:column; gap:0.9rem;}
+  .auth-field{display:flex; flex-direction:column; gap:0.4rem; font-size:0.68rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--c-graphite);}
+  .auth-field input{
+    font-family:inherit; font-size:0.85rem; text-transform:none; letter-spacing:normal;
+    padding:0.65rem 0.8rem; border:1px solid var(--c-line); border-radius:6px; color:var(--c-ink); background:var(--c-white);
+  }
+  .auth-field input:focus{outline:none; border-color:var(--c-ink);}
+  .auth-error{font-size:0.7rem; color:#b3432f; min-height:1em;}
+  .auth-switch{margin-top:1.1rem; font-size:0.74rem; color:var(--c-graphite); text-align:center;}
+  .auth-switch button{margin-left:0.4rem; text-decoration:underline; color:var(--c-ink);}
+  .account-email{font-size:0.9rem; margin-bottom:1.3rem; word-break:break-all;}
 
   /* ---------- MAIN VIEWS ---------- */
 
@@ -683,6 +719,7 @@
     *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;}
   }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </head>
 <body>
 
@@ -740,6 +777,13 @@
       </svg>
     </button>
 
+    <button class="icon-btn account" id="navAccount" aria-label="Mi cuenta">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="3.6"/>
+        <path d="M4.5 20.2c1.3-3.7 4.2-5.8 7.5-5.8s6.2 2.1 7.5 5.8"/>
+      </svg>
+      <span class="icon-dot" id="navAccountDot"></span>
+    </button>
     <button class="icon-btn heart" id="navHeart" aria-label="Lista de deseos">
       <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
         <path d="M12 20.5s-7.6-4.7-10-9.2C0.4 8 1.8 4.5 5 3.4c2.2-.8 4.4.1 5.6 1.9L12 7.2l1.4-1.9c1.2-1.8 3.4-2.7 5.6-1.9 3.2 1.1 4.6 4.6 3 7.9-2.4 4.5-10 9.2-10 9.2z"/>
@@ -778,6 +822,60 @@
       <span id="cartPanelTotal">$0 USD</span>
     </div>
     <button class="detail-buy panel-buy" id="cartBuyBtn" data-i18n="buy_now">Comprar ahora</button>
+  </div>
+</aside>
+
+<!-- ACCOUNT PANEL -->
+<aside class="side-panel" id="accountPanel" aria-label="Mi cuenta">
+  <div class="panel-head">
+    <h3 id="accountPanelTitle" data-i18n="account_title">Mi cuenta</h3>
+    <button class="x-close" id="accountCloseBtn" aria-label="Cerrar"></button>
+  </div>
+  <div class="panel-body">
+
+    <!-- Logged-out: login / signup -->
+    <div class="auth-view" id="authView">
+      <p class="auth-note" id="authGateNote" data-i18n="account_gate_note">Inicia sesión o crea una cuenta para guardar tu lista de deseos y tu carrito.</p>
+
+      <div class="auth-oauth">
+        <button class="auth-oauth-btn" id="googleAuthBtn" type="button">
+          <svg viewBox="0 0 24 24" width="16" height="16"><path fill="#4285F4" d="M23.5 12.27c0-.79-.07-1.54-.2-2.27H12v4.3h6.47c-.28 1.5-1.13 2.77-2.4 3.62v3h3.88c2.27-2.09 3.55-5.17 3.55-8.65z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.07 7.94-2.9l-3.88-3c-1.08.72-2.45 1.15-4.06 1.15-3.13 0-5.78-2.11-6.73-4.96H1.26v3.1C3.24 21.3 7.29 24 12 24z"/><path fill="#FBBC05" d="M5.27 14.29A7.2 7.2 0 0 1 4.89 12c0-.8.14-1.57.38-2.29v-3.1H1.26A11.98 11.98 0 0 0 0 12c0 1.94.46 3.77 1.26 5.39l4.01-3.1z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.6 4.6 1.8l3.44-3.44C17.94 1.2 15.24 0 12 0 7.29 0 3.24 2.7 1.26 6.6l4.01 3.1c.95-2.84 3.6-4.95 6.73-4.95z"/></svg>
+          <span data-i18n="account_continue_google">Continuar con Google</span>
+        </button>
+        <button class="auth-oauth-btn" id="appleAuthBtn" type="button">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M16.36 1c.1 1.1-.32 2.16-1 2.95-.7.84-1.85 1.5-2.96 1.4-.13-1.08.37-2.2 1.02-2.93.72-.82 1.98-1.44 2.94-1.42zM19.9 17.3c-.34.8-.75 1.55-1.28 2.26-.72.97-1.3 1.64-1.98 1.65-.66.02-.87-.42-1.82-.42-.95 0-1.19.4-1.8.44-.66.03-1.32-.7-2.05-1.68-1.5-2.03-2.66-5.73-1.1-8.24.76-1.23 2.13-2.02 3.6-2.04.72-.01 1.4.48 1.82.48.42 0 1.25-.6 2.1-.5.36.02 1.37.14 2.02 1.1-.05.03-1.2.72-1.19 2.13.02 1.7 1.5 2.26 1.52 2.27-.02.05-.24.83-.8 1.65z"/></svg>
+          <span data-i18n="account_continue_apple">Continuar con Apple</span>
+        </button>
+      </div>
+
+      <div class="auth-divider"><span data-i18n="account_or">o con tu correo</span></div>
+
+      <form id="authForm" class="auth-form" autocomplete="on">
+        <label class="auth-field">
+          <span data-i18n="account_email">Correo</span>
+          <input type="email" id="authEmail" required autocomplete="email">
+        </label>
+        <label class="auth-field">
+          <span data-i18n="account_password">Contraseña</span>
+          <input type="password" id="authPassword" required minlength="6" autocomplete="current-password">
+        </label>
+        <p class="auth-error" id="authError"></p>
+        <button type="submit" class="detail-buy panel-buy" id="authSubmitBtn" data-i18n="account_login_btn">Iniciar sesión</button>
+      </form>
+
+      <p class="auth-switch">
+        <span id="authSwitchText" data-i18n="account_no_account">¿No tienes cuenta?</span>
+        <button type="button" id="authSwitchBtn" data-i18n="account_create_btn">Crear cuenta</button>
+      </p>
+    </div>
+
+    <!-- Logged-in view -->
+    <div class="auth-view" id="accountLoggedView" style="display:none;">
+      <p class="auth-note" data-i18n="account_signed_in_as">Sesión iniciada como:</p>
+      <p class="account-email" id="accountEmailLabel"></p>
+      <button type="button" class="detail-buy panel-buy" id="logoutBtn" data-i18n="account_logout_btn">Cerrar sesión</button>
+    </div>
+
   </div>
 </aside>
 
@@ -1024,6 +1122,12 @@
       size_label:"Contenido neto", product_size:"8 oz (227 g)",
       wick_label:"Mecha", product_wick:"Algodón sin plomo",
       buy_now:"Comprar ahora", buy_toast:"¡Gracias por tu compra!",
+      account_title:"Mi cuenta", account_gate_note:"Inicia sesión o crea una cuenta para guardar tu lista de deseos y tu carrito.",
+      account_continue_google:"Continuar con Google", account_continue_apple:"Continuar con Apple", account_or:"o con tu correo",
+      account_email:"Correo", account_password:"Contraseña", account_login_btn:"Iniciar sesión", account_create_btn:"Crear cuenta",
+      account_no_account:"¿No tienes cuenta?", account_have_account:"¿Ya tienes cuenta?", account_signed_in_as:"Sesión iniciada como:",
+      account_logout_btn:"Cerrar sesión", account_error_generic:"Algo salió mal. Intenta de nuevo.", account_error_invalid:"Correo o contraseña incorrectos.",
+      account_check_email:"Revisa tu correo para confirmar tu cuenta.",
       add_cart:"Añadir al carrito", added:"Añadido", coming_soon:"Próximamente",
       panel_wishlist_title:"Lista de deseos", panel_cart_title:"Carrito",
       panel_empty_wishlist:"Aún no has guardado nada.", panel_empty_cart:"Tu carrito está vacío.",
@@ -1064,6 +1168,12 @@
       size_label:"Net weight", product_size:"8 oz (227 g)",
       wick_label:"Wick", product_wick:"Lead-free cotton",
       buy_now:"Buy now", buy_toast:"Thank you for your purchase!",
+      account_title:"My account", account_gate_note:"Sign in or create an account to save your wishlist and cart.",
+      account_continue_google:"Continue with Google", account_continue_apple:"Continue with Apple", account_or:"or with your email",
+      account_email:"Email", account_password:"Password", account_login_btn:"Sign in", account_create_btn:"Create account",
+      account_no_account:"Don't have an account?", account_have_account:"Already have an account?", account_signed_in_as:"Signed in as:",
+      account_logout_btn:"Sign out", account_error_generic:"Something went wrong. Please try again.", account_error_invalid:"Incorrect email or password.",
+      account_check_email:"Check your email to confirm your account.",
       add_cart:"Add to cart", added:"Added", coming_soon:"Coming soon",
       panel_wishlist_title:"Wishlist", panel_cart_title:"Cart",
       panel_empty_wishlist:"Nothing saved yet.", panel_empty_cart:"Your cart is empty.",
@@ -1104,6 +1214,12 @@
       size_label:"Contenu net", product_size:"8 oz (227 g)",
       wick_label:"Mèche", product_wick:"Coton sans plomb",
       buy_now:"Acheter maintenant", buy_toast:"Merci pour votre achat !",
+      account_title:"Mon compte", account_gate_note:"Connectez-vous ou créez un compte pour enregistrer votre liste de souhaits et votre panier.",
+      account_continue_google:"Continuer avec Google", account_continue_apple:"Continuer avec Apple", account_or:"ou avec votre e-mail",
+      account_email:"E-mail", account_password:"Mot de passe", account_login_btn:"Se connecter", account_create_btn:"Créer un compte",
+      account_no_account:"Pas de compte ?", account_have_account:"Déjà un compte ?", account_signed_in_as:"Connecté en tant que :",
+      account_logout_btn:"Se déconnecter", account_error_generic:"Une erreur est survenue. Réessayez.", account_error_invalid:"E-mail ou mot de passe incorrect.",
+      account_check_email:"Vérifiez votre e-mail pour confirmer votre compte.",
       add_cart:"Ajouter au panier", added:"Ajouté", coming_soon:"Bientôt disponible",
       panel_wishlist_title:"Liste de souhaits", panel_cart_title:"Panier",
       panel_empty_wishlist:"Rien d'enregistré pour l'instant.", panel_empty_cart:"Votre panier est vide.",
@@ -1180,6 +1296,23 @@
   const cartPanelFoot = document.getElementById('cartPanelFoot');
   const cartPanelTotal = document.getElementById('cartPanelTotal');
   const cartBuyBtn = document.getElementById('cartBuyBtn');
+  const navAccount = document.getElementById('navAccount');
+  const navAccountDot = document.getElementById('navAccountDot');
+  const accountPanel = document.getElementById('accountPanel');
+  const authView = document.getElementById('authView');
+  const accountLoggedView = document.getElementById('accountLoggedView');
+  const authGateNote = document.getElementById('authGateNote');
+  const authForm = document.getElementById('authForm');
+  const authEmail = document.getElementById('authEmail');
+  const authPassword = document.getElementById('authPassword');
+  const authError = document.getElementById('authError');
+  const authSubmitBtn = document.getElementById('authSubmitBtn');
+  const authSwitchBtn = document.getElementById('authSwitchBtn');
+  const authSwitchText = document.getElementById('authSwitchText');
+  const accountEmailLabel = document.getElementById('accountEmailLabel');
+  const googleAuthBtn = document.getElementById('googleAuthBtn');
+  const appleAuthBtn = document.getElementById('appleAuthBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
   const velasGrid = document.getElementById('velasGrid');
   const homeProductsGrid = document.getElementById('homeProductsGrid');
   const detailOverlay = document.getElementById('detailOverlay');
@@ -1320,7 +1453,7 @@
   function lockScroll(){ lockCount++; document.body.style.overflow = 'hidden'; }
   function unlockScroll(){ lockCount = Math.max(0, lockCount - 1); if(lockCount === 0){ document.body.style.overflow = ''; } }
   function syncBackdrop(){
-    const anyOpen = wishlistPanel.classList.contains('open') || cartPanel.classList.contains('open');
+    const anyOpen = wishlistPanel.classList.contains('open') || cartPanel.classList.contains('open') || accountPanel.classList.contains('open');
     backdrop.classList.toggle('show', anyOpen);
   }
 
@@ -1369,6 +1502,122 @@
   document.getElementById('wishlistCloseBtn').addEventListener('click', closeWishlistPanel);
   document.getElementById('cartCloseBtn').addEventListener('click', closeCartPanel);
 
+  function openAccountPanel(){
+    closeDrawer(); closeLangDropdown(); closeSearchPanel();
+    accountPanel.classList.add('open'); lockScroll(); syncBackdrop();
+  }
+  function closeAccountPanel(){
+    if(!accountPanel.classList.contains('open')) return;
+    accountPanel.classList.remove('open'); unlockScroll(); syncBackdrop();
+  }
+  navAccount.addEventListener('click', openAccountPanel);
+  document.getElementById('accountCloseBtn').addEventListener('click', closeAccountPanel);
+
+  /* ================= SUPABASE AUTH + DATA SYNC ================= */
+  const SUPABASE_URL = 'https://qkumipvkygmmltmsjoph.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_vW614QggFowc9o3OIirlJA_orhknMxr';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  let currentUser = null;
+  let authMode = 'login'; // 'login' | 'signup'
+
+  function setAuthMode(mode){
+    authMode = mode;
+    const t = dict[currentLang];
+    authSubmitBtn.textContent = mode === 'login' ? t.account_login_btn : t.account_create_btn;
+    authSwitchText.textContent = mode === 'login' ? t.account_no_account : t.account_have_account;
+    authSwitchBtn.textContent = mode === 'login' ? t.account_create_btn : t.account_login_btn;
+    authError.textContent = '';
+  }
+  authSwitchBtn.addEventListener('click', () => setAuthMode(authMode === 'login' ? 'signup' : 'login'));
+
+  function renderAccountPanel(){
+    const t = dict[currentLang];
+    if(currentUser){
+      authView.style.display = 'none';
+      accountLoggedView.style.display = '';
+      accountEmailLabel.textContent = currentUser.email;
+    } else {
+      authView.style.display = '';
+      accountLoggedView.style.display = 'none';
+      setAuthMode('login');
+    }
+    navAccount.classList.toggle('active', !!currentUser);
+    navAccountDot.classList.toggle('show', !!currentUser);
+  }
+
+  authForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const t = dict[currentLang];
+    authError.textContent = '';
+    authSubmitBtn.disabled = true;
+    const email = authEmail.value.trim();
+    const password = authPassword.value;
+    try {
+      if(authMode === 'login'){
+        const { error } = await sb.auth.signInWithPassword({ email, password });
+        if(error) throw error;
+        closeAccountPanel();
+      } else {
+        const { data, error } = await sb.auth.signUp({ email, password });
+        if(error) throw error;
+        if(data.session){
+          closeAccountPanel();
+        } else {
+          authError.textContent = t.account_check_email;
+        }
+      }
+      authForm.reset();
+    } catch(err){
+      authError.textContent = (err && /invalid/i.test(err.message)) ? t.account_error_invalid : t.account_error_generic;
+    } finally {
+      authSubmitBtn.disabled = false;
+    }
+  });
+
+  googleAuthBtn.addEventListener('click', () => {
+    sb.auth.signInWithOAuth({ provider: 'google', options:{ redirectTo: window.location.href } });
+  });
+  appleAuthBtn.addEventListener('click', () => {
+    sb.auth.signInWithOAuth({ provider: 'apple', options:{ redirectTo: window.location.href } });
+  });
+  logoutBtn.addEventListener('click', async () => {
+    await sb.auth.signOut();
+  });
+
+  /* Load the signed-in user's wishlist/cart from the database into local state */
+  async function loadUserData(){
+    if(!currentUser){ state.wishlist = new Set(); state.cart = new Map(); return; }
+    const [{ data: wishRows }, { data: cartRows }] = await Promise.all([
+      sb.from('wishlist').select('product_id').eq('user_id', currentUser.id),
+      sb.from('cart_items').select('product_id, quantity').eq('user_id', currentUser.id)
+    ]);
+    state.wishlist = new Set((wishRows || []).map(r => r.product_id));
+    state.cart = new Map((cartRows || []).map(r => [r.product_id, r.quantity]));
+  }
+
+  function refreshEverything(){
+    updateBadges();
+    renderAllGrids();
+    syncDetailIfOpen();
+    if(wishlistPanel.classList.contains('open')) renderWishlistPanel();
+    if(cartPanel.classList.contains('open')) renderCartPanel();
+  }
+
+  sb.auth.onAuthStateChange(async (_event, session) => {
+    currentUser = session ? session.user : null;
+    renderAccountPanel();
+    await loadUserData();
+    refreshEverything();
+  });
+
+  /* Require sign-in before adding to wishlist/cart; opens the account panel instead */
+  function requireAuth(){
+    if(currentUser) return true;
+    openAccountPanel();
+    return false;
+  }
+
   cartBuyBtn.addEventListener('click', () => {
     if(state.cart.size === 0) return;
     const t = dict[currentLang];
@@ -1379,6 +1628,9 @@
     syncDetailIfOpen();
     closeCartPanel();
     showToast(t.buy_toast);
+    if(currentUser){
+      sb.from('cart_items').delete().eq('user_id', currentUser.id).then(()=>{});
+    }
   });
 
   function renderWishlistPanel(){
@@ -1478,9 +1730,9 @@
   }
 
   /* ================= BACKDROP + ESCAPE ================= */
-  backdrop.addEventListener('click', () => { closeWishlistPanel(); closeCartPanel(); });
+  backdrop.addEventListener('click', () => { closeWishlistPanel(); closeCartPanel(); closeAccountPanel(); });
   document.addEventListener('keydown', (e) => {
-    if(e.key === 'Escape'){ closeWishlistPanel(); closeCartPanel(); closeDetail(); closeAllPolicies(); closeDrawer(); closeLangDropdown(); closeSearchPanel(); }
+    if(e.key === 'Escape'){ closeWishlistPanel(); closeCartPanel(); closeAccountPanel(); closeDetail(); closeAllPolicies(); closeDrawer(); closeLangDropdown(); closeSearchPanel(); }
   });
 
   /* ================= CART / WISHLIST ACTIONS ================= */
@@ -1499,13 +1751,16 @@
   }
 
   function toggleWishlist(id, el){
+    if(!requireAuth()) return;
     if(state.wishlist.has(id)){
       state.wishlist.delete(id);
       if(el) el.classList.remove('active');
+      sb.from('wishlist').delete().eq('user_id', currentUser.id).eq('product_id', id).then(()=>{});
     } else {
       state.wishlist.add(id);
       if(el) el.classList.add('active');
       pop(navHeart);
+      sb.from('wishlist').upsert({ user_id: currentUser.id, product_id: id }).then(()=>{});
     }
     updateBadges();
     renderAllGrids();
@@ -1514,12 +1769,15 @@
   }
 
   function addToCart(id){
-    state.cart.set(id, (state.cart.get(id) || 0) + 1);
+    if(!requireAuth()) return;
+    const qty = (state.cart.get(id) || 0) + 1;
+    state.cart.set(id, qty);
     pop(navCart);
     updateBadges();
     renderAllGrids();
     syncDetailIfOpen();
     if(cartPanel.classList.contains('open')) renderCartPanel();
+    sb.from('cart_items').upsert({ user_id: currentUser.id, product_id: id, quantity: qty }).then(()=>{});
   }
 
   function removeFromCart(id){
@@ -1528,6 +1786,9 @@
     renderAllGrids();
     syncDetailIfOpen();
     renderCartPanel();
+    if(currentUser){
+      sb.from('cart_items').delete().eq('user_id', currentUser.id).eq('product_id', id).then(()=>{});
+    }
   }
 
   document.addEventListener('click', (e) => {
@@ -1621,6 +1882,9 @@
     document.getElementById('refundCloseBtn').setAttribute('aria-label', dict[lang].aria_close);
     themeBtn.setAttribute('aria-label', document.documentElement.classList.contains('dark') ? dict[lang].aria_theme_light : dict[lang].aria_theme_dark);
     searchInput.setAttribute('placeholder', dict[lang].search_placeholder);
+    navAccount.setAttribute('aria-label', dict[lang].account_title);
+    document.getElementById('accountCloseBtn').setAttribute('aria-label', dict[lang].aria_close);
+    setAuthMode(authMode);
 
     renderAllGrids();
     if(wishlistPanel.classList.contains('open')) renderWishlistPanel();
