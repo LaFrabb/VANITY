@@ -310,6 +310,16 @@
   .auth-switch button{margin-left:0.4rem; text-decoration:underline; color:var(--c-ink);}
   .account-email{font-size:0.9rem; margin-bottom:1.3rem; word-break:break-all;}
 
+  /* ---------- CHECKOUT ---------- */
+  .checkout-back{
+    display:flex; align-items:center; gap:0.5rem; margin-bottom:1.1rem;
+    font-size:0.72rem; letter-spacing:0.04em; color:var(--c-graphite);
+    transition:color .2s var(--ease);
+  }
+  .checkout-back:hover{color:var(--c-ink);}
+  .auth-field-row{display:flex; gap:0.7rem;}
+  .auth-field-row .auth-field{flex:1; min-width:0;}
+
   /* ---------- MAIN VIEWS ---------- */
 
   main{flex:1;display:flex;flex-direction:column;}
@@ -830,10 +840,59 @@
 <!-- CART PANEL -->
 <aside class="side-panel" id="cartPanel" aria-label="Carrito">
   <div class="panel-head">
-    <h3 data-i18n="panel_cart_title">Carrito</h3>
+    <h3 id="cartPanelTitle" data-i18n="panel_cart_title">Carrito</h3>
     <button class="x-close" id="cartCloseBtn" aria-label="Cerrar"></button>
   </div>
-  <div class="panel-body" id="cartPanelBody"></div>
+  <div class="panel-body">
+    <div id="cartPanelBody"></div>
+
+    <div class="checkout-view" id="checkoutView" style="display:none;">
+      <button type="button" class="checkout-back" id="checkoutBackBtn">
+        <span aria-hidden="true">&larr;</span> <span data-i18n="checkout_back">Volver al carrito</span>
+      </button>
+      <p class="auth-note" data-i18n="checkout_intro">Ingresa tus datos de entrega para completar el pedido.</p>
+      <form id="checkoutForm" class="auth-form">
+        <label class="auth-field">
+          <span data-i18n="checkout_name">Nombre completo</span>
+          <input type="text" id="coFullName" required autocomplete="name">
+        </label>
+        <label class="auth-field">
+          <span data-i18n="checkout_phone">Teléfono</span>
+          <input type="tel" id="coPhone" required autocomplete="tel">
+        </label>
+        <label class="auth-field">
+          <span data-i18n="checkout_address">Dirección (calle y número)</span>
+          <input type="text" id="coAddress" required autocomplete="address-line1">
+        </label>
+        <div class="auth-field-row">
+          <label class="auth-field">
+            <span data-i18n="checkout_city">Ciudad</span>
+            <input type="text" id="coCity" required autocomplete="address-level2">
+          </label>
+          <label class="auth-field">
+            <span data-i18n="checkout_state">Estado</span>
+            <input type="text" id="coState" required autocomplete="address-level1">
+          </label>
+        </div>
+        <div class="auth-field-row">
+          <label class="auth-field">
+            <span data-i18n="checkout_zip">Código postal</span>
+            <input type="text" id="coZip" required autocomplete="postal-code">
+          </label>
+          <label class="auth-field">
+            <span data-i18n="checkout_country">País</span>
+            <input type="text" id="coCountry" required autocomplete="country-name" value="México">
+          </label>
+        </div>
+        <label class="auth-field">
+          <span data-i18n="checkout_notes">Notas de entrega (opcional)</span>
+          <input type="text" id="coNotes" autocomplete="off">
+        </label>
+        <p class="auth-error" id="checkoutError"></p>
+        <button type="submit" class="detail-buy panel-buy" id="checkoutSubmitBtn" data-i18n="checkout_confirm">Confirmar pedido</button>
+      </form>
+    </div>
+  </div>
   <div class="panel-foot" id="cartPanelFoot">
     <div class="panel-foot-total">
       <span data-i18n="cart_total_label">Total</span>
@@ -1133,6 +1192,12 @@
       size_label:"Contenido neto", product_size:"8 oz (227 g)",
       wick_label:"Mecha", product_wick:"Algodón sin plomo",
       buy_now:"Comprar ahora", buy_toast:"¡Gracias por tu compra!",
+      checkout_back:"Volver al carrito", checkout_intro:"Ingresa tus datos de entrega para completar el pedido.",
+      checkout_name:"Nombre completo", checkout_phone:"Teléfono", checkout_address:"Dirección (calle y número)",
+      checkout_city:"Ciudad", checkout_state:"Estado", checkout_zip:"Código postal", checkout_country:"País",
+      checkout_notes:"Notas de entrega (opcional)", checkout_confirm:"Confirmar pedido",
+      checkout_error_generic:"No se pudo registrar el pedido. Intenta de nuevo.", checkout_error_fields:"Completa todos los campos requeridos.",
+      panel_checkout_title:"Datos de entrega", order_toast:"¡Pedido confirmado! Te contactaremos pronto.",
       account_title:"Mi cuenta", account_gate_note:"Inicia sesión o crea una cuenta para guardar tu lista de deseos y tu carrito.",
       account_email:"Correo", account_password:"Contraseña", account_login_btn:"Iniciar sesión", account_create_btn:"Crear cuenta",
       account_no_account:"¿No tienes cuenta?", account_have_account:"¿Ya tienes cuenta?", account_signed_in_as:"Sesión iniciada como:",
@@ -1184,6 +1249,12 @@
       size_label:"Net weight", product_size:"8 oz (227 g)",
       wick_label:"Wick", product_wick:"Lead-free cotton",
       buy_now:"Buy now", buy_toast:"Thank you for your purchase!",
+      checkout_back:"Back to cart", checkout_intro:"Enter your delivery details to complete the order.",
+      checkout_name:"Full name", checkout_phone:"Phone", checkout_address:"Address (street and number)",
+      checkout_city:"City", checkout_state:"State", checkout_zip:"ZIP / postal code", checkout_country:"Country",
+      checkout_notes:"Delivery notes (optional)", checkout_confirm:"Confirm order",
+      checkout_error_generic:"Couldn't place the order. Please try again.", checkout_error_fields:"Please fill in all required fields.",
+      panel_checkout_title:"Delivery details", order_toast:"Order confirmed! We'll contact you soon.",
       account_title:"My account", account_gate_note:"Sign in or create an account to save your wishlist and cart.",
       account_email:"Email", account_password:"Password", account_login_btn:"Sign in", account_create_btn:"Create account",
       account_no_account:"Don't have an account?", account_have_account:"Already have an account?", account_signed_in_as:"Signed in as:",
@@ -1235,6 +1306,12 @@
       size_label:"Contenu net", product_size:"8 oz (227 g)",
       wick_label:"Mèche", product_wick:"Coton sans plomb",
       buy_now:"Acheter maintenant", buy_toast:"Merci pour votre achat !",
+      checkout_back:"Retour au panier", checkout_intro:"Entrez vos informations de livraison pour finaliser la commande.",
+      checkout_name:"Nom complet", checkout_phone:"Téléphone", checkout_address:"Adresse (rue et numéro)",
+      checkout_city:"Ville", checkout_state:"État / région", checkout_zip:"Code postal", checkout_country:"Pays",
+      checkout_notes:"Notes de livraison (facultatif)", checkout_confirm:"Confirmer la commande",
+      checkout_error_generic:"Impossible d'enregistrer la commande. Réessayez.", checkout_error_fields:"Veuillez remplir tous les champs requis.",
+      panel_checkout_title:"Informations de livraison", order_toast:"Commande confirmée ! Nous vous contacterons bientôt.",
       account_title:"Mon compte", account_gate_note:"Connectez-vous ou créez un compte pour enregistrer votre liste de souhaits et votre panier.",
       account_email:"E-mail", account_password:"Mot de passe", account_login_btn:"Se connecter", account_create_btn:"Créer un compte",
       account_no_account:"Pas de compte ?", account_have_account:"Déjà un compte ?", account_signed_in_as:"Connecté en tant que :",
@@ -1320,6 +1397,20 @@
   const cartPanelFoot = document.getElementById('cartPanelFoot');
   const cartPanelTotal = document.getElementById('cartPanelTotal');
   const cartBuyBtn = document.getElementById('cartBuyBtn');
+  const cartPanelTitle = document.getElementById('cartPanelTitle');
+  const checkoutView = document.getElementById('checkoutView');
+  const checkoutBackBtn = document.getElementById('checkoutBackBtn');
+  const checkoutForm = document.getElementById('checkoutForm');
+  const checkoutError = document.getElementById('checkoutError');
+  const checkoutSubmitBtn = document.getElementById('checkoutSubmitBtn');
+  const coFullName = document.getElementById('coFullName');
+  const coPhone = document.getElementById('coPhone');
+  const coAddress = document.getElementById('coAddress');
+  const coCity = document.getElementById('coCity');
+  const coState = document.getElementById('coState');
+  const coZip = document.getElementById('coZip');
+  const coCountry = document.getElementById('coCountry');
+  const coNotes = document.getElementById('coNotes');
   const navAccount = document.getElementById('navAccount');
   const navAccountDot = document.getElementById('navAccountDot');
   const accountPanel = document.getElementById('accountPanel');
@@ -1512,7 +1603,7 @@
   }
   function openCartPanel(){
     closeDrawer(); closeLangDropdown(); closeSearchPanel();
-    renderCartPanel();
+    showCartView();
     cartPanel.classList.add('open'); lockScroll(); syncBackdrop();
   }
   function closeCartPanel(){
@@ -1634,18 +1725,94 @@
     return false;
   }
 
+  function showCheckoutView(){
+    const t = dict[currentLang];
+    cartPanelBody.style.display = 'none';
+    checkoutView.style.display = '';
+    cartPanelFoot.style.display = 'none';
+    cartPanelTitle.textContent = t.panel_checkout_title;
+    checkoutError.textContent = '';
+  }
+  function showCartView(){
+    const t = dict[currentLang];
+    checkoutView.style.display = 'none';
+    cartPanelBody.style.display = '';
+    cartPanelTitle.textContent = t.panel_cart_title;
+    renderCartPanel();
+  }
+
   cartBuyBtn.addEventListener('click', () => {
     if(state.cart.size === 0) return;
+    if(!requireAuth()) return;
+    showCheckoutView();
+  });
+
+  checkoutBackBtn.addEventListener('click', showCartView);
+
+  checkoutForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
     const t = dict[currentLang];
-    state.cart.clear();
-    updateBadges();
-    renderAllGrids();
-    renderCartPanel();
-    syncDetailIfOpen();
-    closeCartPanel();
-    showToast(t.buy_toast);
-    if(currentUser){
-      sb.from('cart_items').delete().eq('user_id', currentUser.id).then(()=>{});
+    checkoutError.textContent = '';
+    if(!currentUser){ openAccountPanel(); return; }
+    if(state.cart.size === 0) return;
+
+    const shipping = {
+      full_name: coFullName.value.trim(),
+      phone: coPhone.value.trim(),
+      address: coAddress.value.trim(),
+      city: coCity.value.trim(),
+      state: coState.value.trim(),
+      postal_code: coZip.value.trim(),
+      country: coCountry.value.trim(),
+      notes: coNotes.value.trim()
+    };
+    if(!shipping.full_name || !shipping.phone || !shipping.address || !shipping.city || !shipping.state || !shipping.postal_code || !shipping.country){
+      checkoutError.textContent = t.checkout_error_fields;
+      return;
+    }
+
+    const items = [...state.cart.entries()].filter(([id, qty]) => qty > 0).map(([id, qty]) => {
+      const p = products.find(pp => pp.id === id);
+      return { product_id: id, name: t.products[id].name, quantity: qty, unit_price: p.price };
+    });
+    const total = items.reduce((sum, it) => sum + it.unit_price * it.quantity, 0);
+
+    checkoutSubmitBtn.disabled = true;
+    try {
+      const { error } = await sb.from('orders').insert({
+        user_id: currentUser.id,
+        customer_email: currentUser.email,
+        items,
+        total,
+        currency: 'USD',
+        full_name: shipping.full_name,
+        phone: shipping.phone,
+        address: shipping.address,
+        city: shipping.city,
+        state: shipping.state,
+        postal_code: shipping.postal_code,
+        country: shipping.country,
+        notes: shipping.notes,
+        status: 'pending'
+      });
+      if(error) throw error;
+
+      state.cart.clear();
+      updateBadges();
+      renderAllGrids();
+      syncDetailIfOpen();
+      if(currentUser){
+        sb.from('cart_items').delete().eq('user_id', currentUser.id).then(()=>{});
+      }
+      checkoutForm.reset();
+      coCountry.value = 'México';
+      showCartView();
+      closeCartPanel();
+      showToast(t.order_toast);
+    } catch(err){
+      checkoutError.textContent = t.checkout_error_generic;
+    } finally {
+      checkoutSubmitBtn.disabled = false;
     }
   });
 
@@ -1901,10 +2068,11 @@
     navAccount.setAttribute('aria-label', dict[lang].account_title);
     document.getElementById('accountCloseBtn').setAttribute('aria-label', dict[lang].aria_close);
     setAuthMode(authMode);
+    if(checkoutView.style.display !== 'none'){ cartPanelTitle.textContent = dict[lang].panel_checkout_title; }
 
     renderAllGrids();
     if(wishlistPanel.classList.contains('open')) renderWishlistPanel();
-    if(cartPanel.classList.contains('open')) renderCartPanel();
+    if(cartPanel.classList.contains('open') && checkoutView.style.display === 'none') renderCartPanel();
     if(menuSearchWrap.classList.contains('open')) renderSearchResults(searchInput.value);
     syncDetailIfOpen();
   }
