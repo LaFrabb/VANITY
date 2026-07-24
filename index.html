@@ -1754,7 +1754,8 @@
       if(error) throw error;
       showOtpCodeStep(email);
     } catch(err){
-      otpEmailError.textContent = t.account_error_generic;
+      console.error('signInWithOtp error:', err);
+      otpEmailError.textContent = t.account_error_generic + (err && err.message ? ' (' + err.message + ')' : '');
     } finally {
       otpSendBtn.disabled = false;
     }
@@ -1770,7 +1771,8 @@
       if(error) throw error;
       closeAccountPanel();
     } catch(err){
-      otpCodeError.textContent = t.account_error_code;
+      console.error('verifyOtp error:', err);
+      otpCodeError.textContent = t.account_error_code + (err && err.message ? ' (' + err.message + ')' : '');
     } finally {
       otpVerifyBtn.disabled = false;
     }
@@ -1787,7 +1789,8 @@
       if(error) throw error;
       otpSentNote.textContent = `${t.account_code_sent_to} ${pendingEmail}`;
     } catch(err){
-      otpCodeError.textContent = t.account_error_generic;
+      console.error('resend signInWithOtp error:', err);
+      otpCodeError.textContent = t.account_error_generic + (err && err.message ? ' (' + err.message + ')' : '');
     } finally {
       otpResendBtn.disabled = false;
     }
